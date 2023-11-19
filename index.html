@@ -425,16 +425,25 @@ def sorted(my_list):
          let micropip = pyodide.pyimport("micropip");
          // Load custom pure-python astpath wheel (dependency of superhelp)
          await micropip.install('astpath-0.9.1-py3-none-any.whl');
-         await micropip.install('superhelp');
+         await micropip.install('superhelp==1.9.3');
+         pyodide.runPython('from superhelp.helper import OutputSettings, Format, Level, Theme, get_formatted_help_dets')
          return pyodide;
        }
 
        let [monacoEditor, pyodide] = await Promise.all([loadMonacoEditor(), loadPythonPyodide()])
        function updateHelp() {
          pyodide.globals.set('user_code', monacoEditor.getValue());
-         let helpHtml = pyodide.runPython(`
-            f'<!doctype html><html><body><pre>{user_code}</pre></body></html>'
+         pyodide.runPython(`
+             superhelp_output, _ = next(get_formatted_help_dets(
+                 code=user_code,
+                 output_settings=OutputSettings(
+                     format_name=Format.HTML,
+                     theme_name=Theme.LIGHT,
+                     detail_level=Level.MAIN,
+                 ),
+             ))
          `);
+         let helpHtml = pyodide.globals.get('superhelp_output');
 
          let outputElement = document.getElementById('superhelp-output')
          Array.from(outputElement.children).forEach(child => child.remove());
