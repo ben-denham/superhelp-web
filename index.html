@@ -425,7 +425,7 @@ def sorted(my_list):
          let micropip = pyodide.pyimport("micropip");
          // Load custom pure-python astpath wheel (dependency of superhelp)
          await micropip.install('astpath-0.9.1-py3-none-any.whl');
-         await micropip.install('superhelp==1.9.3');
+         await micropip.install('superhelp==1.9.5');
          pyodide.runPython('from superhelp.helper import OutputSettings, Format, Level, Theme, get_formatted_help_dets')
          return pyodide;
        }
